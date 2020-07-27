@@ -6,7 +6,7 @@ require_once "request.php";
 require_once "response.php";
 require_once "router.php";
 
-class Application extends Router {
+final class Application extends Router {
 
 	/**
 	 * Run the application to handle incomming request.

@@ -5,7 +5,7 @@ namespace Fir;
 /**
  * Stores information about request.
  */
-class Request {
+final class Request {
 
 	/**
 	 * URL parameters of request.

@@ -2,7 +2,7 @@
 
 namespace Fir;
 
-class Response {
+final class Response {
 
 	/**
 	 * Reponse body.
