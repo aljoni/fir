@@ -3,7 +3,6 @@
 namespace Fir;
 
 require_once "router.php";
-require_once "route_part.php";
 
 /**
  * Defines the route to an endpoint in your application.
