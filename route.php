@@ -65,7 +65,7 @@ final class Route
 	public function matches(string $path, string $method) : bool
 	{
 		$regex = Router::route_as_regex($this->get_full_route());
-		$path = trim($path, " /");
+		$path = "/" . trim($path, " /");
 		return preg_match($regex, $path) === 1;
 	}
 }

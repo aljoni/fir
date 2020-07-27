@@ -2,6 +2,8 @@
 
 namespace Fir;
 
+require_once "route.php";
+
 class Router
 {
 	private const ROUTE_VAR = "/^<[^\[\]]+>$/";
@@ -57,11 +59,11 @@ class Router
 	public function get_full_route() : string
 	{
 		$path = "";
-		if ($this->parent !== NULL)
+		if ($this->parent)
 		{
 			$path = trim($this->parent->get_full_route(), "/");
 		}
-		return "/" . trim($path . "/" . trim($this->route, "/"), "/");
+		return  "/" . trim($path . "/" . trim($this->route, "/"), "/");
 	}
 
 	/**
@@ -94,9 +96,14 @@ class Router
 	 */
 	public function set_parent($parent) : void
 	{
-		if ($parent === $this)
+		$check_parent = $parent;
+		while ($check_parent)
 		{
-			throw new \Exception("Parent can't be the child router");
+			if ($check_parent === $this)
+			{
+				throw new \Exception("Parent can't be the child router");
+			}
+			$check_parent = $check_parent->parent;
 		}
 
 		$this->parent = $parent;
@@ -144,7 +151,7 @@ class Router
 		{
 			$expression .= "$";
 		}
-		return "/^$expression/";
+		return "/^\\/$expression/";
 	}
 
 	/**
@@ -167,7 +174,7 @@ class Router
 
 		foreach ($this->routers as $router)
 		{
-			if (preg_match($router->handler->regex, $path) === 1)
+			if (preg_match($router->handler->regex, $path) === 0)
 			{
 				continue;
 			}
