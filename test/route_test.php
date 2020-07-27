@@ -119,4 +119,28 @@ final class RouteTest extends TestCase
 		$this->assertArrayNotHasKey("b", $params_2, "Check parameter 'b' is not present");
 		$this->assertEquals("baz", $params_2["a"], "Check value of 'a'");
 	}
+
+	public function testGetParametersNested() : void
+	{
+		$router_1 = new \Fir\Router("/");
+		$router_2 = new \Fir\Router("/r2");
+
+		$route = new \Fir\Route($router_2, "/<id>", function() {}, []);
+
+		$params = $route->get_parameters("/r2/foobar");
+
+		$this->assertArrayHasKey("id", $params, "Check parameter 'id' is present");
+		$this->assertEquals("foobar", $params["id"], "Check value of 'id'");
+	}
+
+	public function testGetParametersRouter() : void
+	{
+		$router = new \Fir\Router("/<rt>");
+		$route = new \Fir\Route($router, "/foo", function() {}, []);
+
+		$params = $route->get_parameters("/foobar/foo");
+
+		$this->assertArrayHasKey("rt", $params, "Check parameter 'rt' is present");
+		$this->assertEquals("foobar", $params["rt"], "Check value of 'rt'");
+	}
 }
