@@ -7,17 +7,15 @@ require_once "router.php";
 
 use PHPUnit\Framework\TestCase;
 
-final class RouteTest extends TestCase
-{
+final class RouteTest extends TestCase {
+
 	private $R;
 
-	public function setUp()
-	{
+	public function setUp() {
 		$this->R = new \Fir\Router();
 	}
 
-	public function testEmptyRoute() : void
-	{
+	public function testEmptyRoute(): void {
 		$route = new \Fir\Route($this->R, "", function() {}, []);
 
 		$this->assertTrue($route->matches("", "GET"), "Correct usage; empty");
@@ -27,8 +25,7 @@ final class RouteTest extends TestCase
 		$this->assertFalse($route->matches("/foobar/", "GET"), "Incorrect usage with trailing slash");
 	}
 
-	public function testSlashRoute() : void
-	{
+	public function testSlashRoute(): void {
 		$route = new \Fir\Route($this->R, "/", function() {}, []);
 
 		$this->assertTrue($route->matches("", "GET"), "Correct usage; empty");
@@ -38,8 +35,7 @@ final class RouteTest extends TestCase
 		$this->assertFalse($route->matches("/foobar/", "GET"), "Incorrect usage with trailing slash");
 	}
 
-	public function testSingleItem() : void
-	{
+	public function testSingleItem(): void {
 		$route = new \Fir\Route($this->R, "/home", function() {}, []);
 
 		$this->assertTrue($route->matches("/home", "GET"), "Correct usage");
@@ -48,8 +44,7 @@ final class RouteTest extends TestCase
 		$this->assertFalse($route->matches("/foobar/", "GET"), "Incorrect usage with trailing slash");
 	}
 
-	public function testVariable() : void
-	{
+	public function testVariable(): void {
 		$route = new \Fir\Route($this->R, "/profile/<id>", function() {}, []);
 
 		$this->assertTrue($route->matches("/profile/foobar", "GET"), "Correct usage");
@@ -58,8 +53,7 @@ final class RouteTest extends TestCase
 		$this->assertFalse($route->matches("/profile/", "GET"), "Incorrect usage with trailing slash");
 	}
 
-	public function testOptionalVariable() : void
-	{
+	public function testOptionalVariable(): void {
 		$route = new \Fir\Route($this->R, "/<id>?", function() {}, []);
 
 		$this->assertTrue($route->matches("/foobar", "GET"), "Correct usage");
@@ -69,8 +63,7 @@ final class RouteTest extends TestCase
 		$this->assertTrue($route->matches("", "GET"), "Correct usage without; empty");
 	}
 
-	public function testOptionalVariableAfterNonOptional() : void
-	{
+	public function testOptionalVariableAfterNonOptional(): void {
 		$route = new \Fir\Route($this->R, "/profile/<id>?", function() {}, []);
 
 		$this->assertTrue($route->matches("/profile/foobar", "GET"), "Correct usage");
@@ -81,8 +74,7 @@ final class RouteTest extends TestCase
 		$this->assertFalse($route->matches("/profile/foobar/bar/", "GET"), "Extra parameter with trailing slash");
 	}
 
-	public function testOptionalPart() : void
-	{
+	public function testOptionalPart(): void {
 		$route = new \Fir\Route($this->R, "/foobar?", function() {}, []);
 
 		$this->assertTrue($route->matches("/foobar", "GET"), "Correct usage; optional provided");
@@ -92,8 +84,7 @@ final class RouteTest extends TestCase
 		$this->assertFalse($route->matches("/barfoo/", "GET"), "Incorrect usage with trailing slash");
 	}
 
-	public function testOptionalPartWithNonOptional() : void
-	{
+	public function testOptionalPartWithNonOptional(): void {
 		$route = new \Fir\Route($this->R, "/foo?/bar", function() {}, []);
 
 		$this->assertTrue($route->matches("/foo/bar", "GET"), "Correct usage; optional provided");
@@ -103,8 +94,7 @@ final class RouteTest extends TestCase
 		$this->assertFalse($route->matches("/barfoo/", "GET"), "Incorrect usage with trailing slash");
 	}
 
-	public function testGetParameters() : void
-	{
+	public function testGetParameters(): void {
 		$route = new \Fir\Route($this->R, "/test/<a>/<b>?", function() {}, []);
 
 		$params_1 = $route->get_parameters("/test/foo/bar");
@@ -120,8 +110,7 @@ final class RouteTest extends TestCase
 		$this->assertEquals("baz", $params_2["a"], "Check value of 'a'");
 	}
 
-	public function testGetParametersNested() : void
-	{
+	public function testGetParametersNested(): void {
 		$router_1 = new \Fir\Router("/");
 		$router_2 = new \Fir\Router("/r2");
 
@@ -133,8 +122,7 @@ final class RouteTest extends TestCase
 		$this->assertEquals("foobar", $params["id"], "Check value of 'id'");
 	}
 
-	public function testGetParametersRouter() : void
-	{
+	public function testGetParametersRouter(): void {
 		$router = new \Fir\Router("/<rt>");
 		$route = new \Fir\Route($router, "/foo", function() {}, []);
 
@@ -143,4 +131,5 @@ final class RouteTest extends TestCase
 		$this->assertArrayHasKey("rt", $params, "Check parameter 'rt' is present");
 		$this->assertEquals("foobar", $params["rt"], "Check value of 'rt'");
 	}
+
 }

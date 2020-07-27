@@ -6,10 +6,9 @@ require_once "router.php";
 
 use PHPUnit\Framework\TestCase;
 
-final class RouterTest extends TestCase
-{
-	public function testSingleRouter()
-	{
+final class RouterTest extends TestCase {
+
+	public function testSingleRouter() {
 		$router = new \Fir\Router("/");
 		$router->add("/", function() {}, []);
 		$router->add("/foo", function() {}, []);
@@ -18,8 +17,7 @@ final class RouterTest extends TestCase
 		$this->assertNotNull($router->resolve("/foo", "GET"), "Resolve: /foo");
 	}
 
-	public function testNestedRouters()
-	{
+	public function testNestedRouters() {
 		$router_1 = new \Fir\Router("/");
 		$router_2 = new \Fir\Router("/r2");
 		$router_3 = new \Fir\Router("/r3");
@@ -40,8 +38,7 @@ final class RouterTest extends TestCase
 		$this->assertNotNull($router_1->resolve("/r2/r3/bar", "GET"), "Resolve: /r2/r3/bar");
 	}
 
-	public function testNestedRoutersEmptyRoute()
-	{
+	public function testNestedRoutersEmptyRoute() {
 		$router_1 = new \Fir\Router("/");
 		$router_2 = new \Fir\Router("/");
 		$router_1->add_router($router_2);
@@ -54,8 +51,7 @@ final class RouterTest extends TestCase
 		$this->assertNotNull($router_1->resolve("/bar", "GET"), "Router 1: /bar");
 	}
 
-	public function testPreventRecursiveRouters()
-	{
+	public function testPreventRecursiveRouters() {
 		$this->expectException(Exception::class);
 
 		$router_1 = new \Fir\Router("");
@@ -66,4 +62,5 @@ final class RouterTest extends TestCase
 		$router_2->add_router($router_3);
 		$router_3->add_router($router_1); // This should fail.
 	}
+
 }
