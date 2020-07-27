@@ -12,7 +12,7 @@ class Router
 	 * Base route for all handlers registered with router.
 	 * @var string
 	 */
-	private $route;
+	public $route;
 
 	/**
 	 * Regex to match first part of path against.
@@ -24,19 +24,19 @@ class Router
 	 * Parent router.
 	 * @var \Fir\Router|null
 	 */
-	private $parent;
+	public $parent;
 
 	/**
 	 * Stores the routes which are handled by the router.
 	 * @var \Fir\Route[] 
 	 */
-	private $routes;
+	public $routes;
 
 	/**
 	 * Nested routers.
 	 * @var \Fir\Route[]
 	 */
-	private $routers;
+	public $routers;
 
 	/**
 	 * Constructs a new router.
@@ -73,7 +73,8 @@ class Router
 	 * @param callable      $handler Route handler function.
 	 * @param string[]|null $methods Methods accepted by route.
 	 */
-	public function add(string $route, callable $handler, array $methods) : void
+	public function add(string $route, callable $handler,
+		array $methods = []) : void
 	{
 		$this->routes[] = new Route($this, $route, $handler, $methods);
 	}
@@ -151,7 +152,7 @@ class Router
 		{
 			$expression .= "$";
 		}
-		return "/^\\/$expression/";
+		return "/^\\/?$expression/";
 	}
 
 	/**
@@ -168,7 +169,7 @@ class Router
 		{
 			if ($route->matches($path, $method))
 			{
-				return $route->handler;
+				return $route;
 			}
 		}
 

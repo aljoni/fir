@@ -49,7 +49,7 @@ final class Route
 		$this->methods = $methods;
 	}
 
-	private function get_full_route() : string
+	public function get_full_route() : string
 	{
 		return "/" . trim($this->parent->get_full_route() . "/" . trim($this->route, "/"), "/");
 	}
