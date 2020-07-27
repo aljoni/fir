@@ -68,4 +68,28 @@ final class Route
 		$path = "/" . trim($path, " /");
 		return preg_match($regex, $path) === 1;
 	}
+
+	/**
+	 * Get the path parameters from a path.
+	 *
+	 * @param string $path Path to parse.
+	 *
+	 * @return array Path parameters.
+	 */
+	public function get_parameters(string $path) : array
+	{
+		$regex = Router::route_as_regex($this->get_full_route());
+
+		$matches = [];
+		preg_match($regex, $path, $matches);
+
+		foreach ($matches as $k => $v)
+		{
+			if (is_int($k))
+			{
+				unset($matches[$k]);
+			}
+		}
+		return $matches;
+	}
 }

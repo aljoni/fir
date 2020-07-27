@@ -102,4 +102,21 @@ final class RouteTest extends TestCase
 		$this->assertFalse($route->matches("/bar/foo", "GET"), "Incorrect usage");
 		$this->assertFalse($route->matches("/barfoo/", "GET"), "Incorrect usage with trailing slash");
 	}
+
+	public function testGetParameters() : void
+	{
+		$route = new \Fir\Route($this->R, "/test/<a>/<b>?", function() {}, []);
+
+		$params_1 = $route->get_parameters("/test/foo/bar");
+		$params_2 = $route->get_parameters("/test/baz");
+
+		$this->assertArrayHasKey("a", $params_1, "Check parameter 'a' is present");
+		$this->assertArrayHasKey("b", $params_1, "Check parameter 'b' is present");
+		$this->assertEquals("foo", $params_1["a"], "Check value of 'a'");
+		$this->assertEquals("bar", $params_1["b"], "Check value of 'a'");
+
+		$this->assertArrayHasKey("a", $params_2, "Check parameter 'a' is present");
+		$this->assertArrayNotHasKey("b", $params_2, "Check parameter 'b' is not present");
+		$this->assertEquals("baz", $params_2["a"], "Check value of 'a'");
+	}
 }
