@@ -2,42 +2,53 @@
 
 namespace Fir;
 
+require_once "request.php";
+require_once "response.php";
 require_once "router.php";
 
-class Application extends Router
-{
-	public function run(string $path = "-", string $method = "-")
-	{
-		if ($path === "-")
-		{
-			if (isset($_GET["__path"]))
-			{
+class Application extends Router {
+
+	/**
+	 * Run the application to handle incomming request.
+	 *
+	 * @param string $path   Requested path.
+	 * @param string $method Request method.
+	 */
+	public function run(string $path = NULL, string $method = NULL) {
+		if ($path === NULL) {
+			if (isset($_GET["__path"])) {
 				$path = $_GET["__path"];
-			}
-			else
-			{
+			} else {
 				$path = "/";
 			}
 		}
-
-		if ($method === "-")
-		{
+		if ($method === NULL) {
 			$method = $_SERVER["REQUEST_METHOD"];
 		}
 
 		$route = $this->resolve($path, $method);
-		if ($route === NULL)
-		{
-			echo "404!";
-			return;
+
+		$req = new Request();
+		$res = new Response();
+
+		if ($route === NULL) {
+			$res->code = 404;
+			$res->write("<title>404: Not Found</title>");
+			$res->write("<center>");
+			$res->write("<h1>404: Not Found</h1>");
+			$res->write("<hr/>");
+			$res->write("<p>The page that you requested was not found on this server.</p>");
+			$res->write("</center>");
+		} else {
+			$req->params = $route->get_parameters($path);
+			($route->handler)($req, $res);
 		}
 
-		$parameters = $route->get_parameters($path);
-		if ($route instanceof \Fir\Router)
-		{
-			// TODO: Handle resolution to Router.
-			return;
+		foreach ($res->headers as $k => $v) {
+			header("$k: $v");
 		}
-		($route->handler)($parameters);
+		print($res->body);
+		http_response_code($res->code);
 	}
+
 }

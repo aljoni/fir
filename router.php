@@ -4,8 +4,8 @@ namespace Fir;
 
 require_once "route.php";
 
-class Router
-{
+class Router {
+
 	private const ROUTE_VAR = "/^<[^\[\]]+>$/";
 
 	/**
@@ -44,8 +44,7 @@ class Router
 	 * @param string           $route  Base route of handlers registered to router.
 	 * @param \Fir\Router|null $parent Parent router.
 	 */
-	public function __construct(string $route = "", $parent = NULL)
-	{
+	public function __construct(string $route = "", $parent = NULL) {
 		$this->route = $route;
 		$this->parent = $parent;
 		$this->regex = self::route_as_regex($this->get_full_route(), FALSE);
@@ -56,11 +55,9 @@ class Router
 	/**
 	 * @return string Full route to router.
 	 */
-	public function get_full_route() : string
-	{
+	public function get_full_route(): string {
 		$path = "";
-		if ($this->parent)
-		{
+		if ($this->parent) {
 			$path = trim($this->parent->get_full_route(), "/");
 		}
 		return  "/" . trim($path . "/" . trim($this->route, "/"), "/");
@@ -74,8 +71,7 @@ class Router
 	 * @param string[]|null $methods Methods accepted by route.
 	 */
 	public function add(string $route, callable $handler,
-		array $methods = []) : void
-	{
+			array $methods = []): void {
 		$this->routes[] = new Route($this, $route, $handler, $methods);
 	}
 
@@ -84,8 +80,7 @@ class Router
 	 *
 	 * @param \Fir\Router $router Router to add.
 	 */
-	public function add_router($router) : void
-	{
+	public function add_router($router): void {
 		$router->set_parent($this);
 		$this->routers[] = new Route($this, $router->route, $router, []);
 	}
@@ -95,13 +90,10 @@ class Router
 	 *
 	 * @param \Fir\Router $parent Router to set as parent.
 	 */
-	public function set_parent($parent) : void
-	{
+	public function set_parent($parent): void {
 		$check_parent = $parent;
-		while ($check_parent)
-		{
-			if ($check_parent === $this)
-			{
+		while ($check_parent) {
+			if ($check_parent === $this) {
 				throw new \Exception("Parent can't be the child router");
 			}
 			$check_parent = $check_parent->parent;
@@ -120,36 +112,33 @@ class Router
 	 * @return Route parts.
 	 */
 	public static function route_as_regex(string $route,
-		bool $include_end_maker = TRUE) : string
-	{
+			bool $include_end_maker = TRUE): string {
 		$route = explode("/", trim($route, " /"));
 
 		$expression = "";
-		foreach (array_values($route) as $i => $part)
-		{
-			$optional = strlen($part) > 0 ? (($part[strlen($part) - 1] === "?") ? "?" : "") : "";
+		foreach (array_values($route) as $i => $part) {
+			$optional = strlen($part) > 0
+				? (($part[strlen($part) - 1] === "?")
+					? "?"
+					: "")
+				: "";
 			$part = rtrim($part, "?");
 
-			if (preg_match(self::ROUTE_VAR, $part) === 1)
-			{
+			if (preg_match(self::ROUTE_VAR, $part) === 1) {
 				$part = trim($part, "<>");
 				$expression .= "?(?P<$part>[^\\/]+)$optional";
 				$expression .= "\\/$optional";
-			}
-			else
-			{
+			} else {
 				$expression .= "($part)$optional";
 				$expression .= "\\/$optional";
 			}
 		}
 
 		$expression = ltrim($expression, "?");
-		if ($expression[strlen($expression) - 1] !== "?")
-		{
+		if ($expression[strlen($expression) - 1] !== "?") {
 			$expression .= "?";
 		}
-		if ($include_end_maker)
-		{
+		if ($include_end_maker) {
 			$expression .= "$";
 		}
 		return "/^\\/?$expression/";
@@ -163,25 +152,19 @@ class Router
 	 *
 	 * @return callable|null Handler, or null.
 	 */
-	public function resolve(string $path, string $method)
-	{
-		foreach ($this->routes as $route)
-		{
-			if ($route->matches($path, $method))
-			{
+	public function resolve(string $path, string $method) {
+		foreach ($this->routes as $route) {
+			if ($route->matches($path, $method)) {
 				return $route;
 			}
 		}
-
-		foreach ($this->routers as $router)
-		{
-			if (preg_match($router->handler->regex, $path) === 0)
-			{
+		foreach ($this->routers as $router) {
+			if (preg_match($router->handler->regex, $path) === 0) {
 				continue;
 			}
 			return $router->handler->resolve($path, $method);
 		}
-
 		return NULL;
 	}
+
 }
